@@ -73,6 +73,9 @@ def init_db():
         raise
 init_db()
 
+# Cria instância do FastAPI
+app = FastAPI()
+
 # CORS (front em http://localhost:8080)
 app.add_middleware(
     CORSMiddleware,
