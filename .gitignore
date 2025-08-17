@@ -1,0 +1,6 @@
+﻿backend/ranking.db
+backend/ranking.db-shm
+backend/ranking.db-wal
+backend/__pycache__/
+*.pyc
+.env
