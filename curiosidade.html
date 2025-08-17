@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>EcoQuiz — Curiosidades Verdes</title>
+
+  <!-- Tailwind via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {50:"#f0fdf4",100:"#dcfce7",200:"#bbf7d0",300:"#86efac",400:"#4ade80",500:"#22c55e",600:"#16a34a"}
+          },
+          keyframes: {
+            blob:{'0%,100%':{transform:'translate(0,0) scale(1)'},
+                  '33%':{transform:'translate(12px,-18px) scale(1.06)'},
+                  '66%':{transform:'translate(-12px,12px) scale(.98)'}}
+          },
+          animation:{blob:'blob 12s ease-in-out infinite'},
+          boxShadow:{soft:'0 8px 30px rgba(16,185,129,.15)'}
+        }
+      }
+    }
+  </script>
+
+  <!-- fonte -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial; }</style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-brand-50 via-white to-brand-100 text-slate-800">
+  <!-- decor -->
+  <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+    <div class="absolute -top-16 -left-10 h-64 w-64 rounded-full bg-brand-200 blur-3xl opacity-50 animate-blob"></div>
+    <div class="absolute top-32 -right-8 h-72 w-72 rounded-full bg-brand-300 blur-3xl opacity-40 animate-blob" style="animation-delay:2s"></div>
+    <div class="absolute bottom-0 left-1/3 h-56 w-56 rounded-full bg-brand-100 blur-3xl opacity-60 animate-blob" style="animation-delay:4s"></div>
+  </div>
+
+  <!-- NAV -->
+  <header class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+    <a href="./index.html" class="flex items-center gap-2">
+      <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-brand-400 text-white shadow-soft">🌱</span>
+      <span class="text-lg font-extrabold">Eco<span class="text-brand-600">Quiz</span></span>
+    </a>
+    <nav class="hidden md:flex gap-6 text-slate-600">
+      <a href="./index.html#jogar" class="hover:text-slate-900">Jogar</a>
+      <a href="./impacto.html" class="hover:text-slate-900">Impacto</a>
+      <a href="./curiosidade.html" class="text-slate-900 font-semibold">Curiosidades</a>
+      <a href="mapa.html" class="hover:text-slate-900">Mapa</a>
+      <a href="./interativo.html" class="text-slate-900">Interativo</a>
+    </nav>
+    <a href="./index.html#jogar" class="px-4 py-2 rounded-xl bg-brand-500 text-white hover:bg-brand-600 transition shadow-soft">Voltar ao quiz</a>
+  </header>
+
+  <!-- HERO -->
+  <section class="max-w-7xl mx-auto px-6 pt-6 pb-6 text-center">
+    <div class="inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-1 text-sm text-slate-600 shadow-soft">
+      <span class="h-2 w-2 rounded-full bg-brand-500 animate-pulse"></span>
+      Curiosidades reais da Wikipedia (pt)
+    </div>
+    <h1 class="mt-4 text-4xl md:text-5xl font-extrabold leading-tight">
+      Curiosidades <span class="bg-gradient-to-r from-brand-600 to-brand-400 bg-clip-text text-transparent">Verdes</span>
+    </h1>
+    <p class="mt-3 text-lg text-slate-600 max-w-2xl mx-auto">
+      Explore fatos sobre clima, reciclagem, energia renovável e mais. Puxe aleatórias ou pesquise um tema específico.
+    </p>
+  </section>
+
+  <!-- CONTROLES -->
+  <section class="max-w-7xl mx-auto px-6 pb-4">
+    <div class="bg-white rounded-2xl p-5 border border-brand-100 shadow-soft">
+      <div class="grid md:grid-cols-4 gap-3">
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-slate-700">Pesquisar tema</label>
+          <input id="inpSearch" placeholder="Ex: Energia solar, Reciclagem..." class="mt-1 w-full rounded-xl border border-brand-200 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-300" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700">Categoria</label>
+          <select id="selCat" class="mt-1 w-full rounded-xl border border-brand-200 px-3 py-2">
+            <option value="auto">Aleatória (todas)</option>
+            <option>Categoria:Meio ambiente</option>
+            <option>Categoria:Mudanças climáticas</option>
+            <option>Categoria:Energia renovável</option>
+            <option>Categoria:Reciclagem</option>
+            <option>Categoria:Poluição</option>
+            <option>Categoria:Desmatamento</option>
+            <option>Categoria:Aquecimento global</option>
+          </select>
+        </div>
+        <div class="flex gap-2 items-end">
+          <button id="btnSearch" class="flex-1 px-4 py-2 rounded-xl bg-white border border-brand-200 hover:bg-brand-50">Buscar</button>
+          <button id="btnRandom" class="flex-1 px-4 py-2 rounded-xl bg-brand-500 text-white hover:bg-brand-600">Aleatória</button>
+        </div>
+      </div>
+      <div class="mt-3">
+        <button id="btnSurprise" class="px-4 py-2 rounded-xl bg-white border border-brand-200 hover:bg-brand-50">Surpreenda-me (3)</button>
+        <button id="btnClear" class="ml-2 px-4 py-2 rounded-xl bg-white border border-brand-200 hover:bg-brand-50">Limpar</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- GRID -->
+  <section class="max-w-7xl mx-auto px-6 pb-16">
+    <div id="factsGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    <div id="emptyMsg" class="text-center text-slate-500 mt-6 hidden">Sem resultados por enquanto. Bora puxar uma curiosidade! 🌿</div>
+
+    <div class="mt-10">
+      <h3 class="text-lg font-semibold">Últimas vistas</h3>
+      <div id="historyGrid" class="mt-3 grid sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+    </div>
+  </section>
+
+  <footer class="text-center px-6 py-10 text-slate-500">
+    © 2025 — EcoQuiz. Curiosidades da Wikipedia.
+  </footer>
+
+  <script src="./script-curiosidade.js"></script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>EcoQuiz — Interativo (Decibéis)</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme:{ extend:{
+      colors:{ brand:{50:"#f0fdf4",100:"#dcfce7",200:"#bbf7d0",300:"#86efac",400:"#4ade80",500:"#22c55e",600:"#16a34a"} },
+      boxShadow:{soft:'0 8px 30px rgba(16,185,129,.15)'},
+      keyframes:{ blob:{'0%,100%':{transform:'translate(0,0) scale(1)'},'33%':{transform:'translate(12px,-18px) scale(1.06)'},'66%':{transform:'translate(-12px,12px) scale(.98)'}} },
+      animation:{ blob:'blob 12s ease-in-out infinite' }
+    } } }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial}</style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-brand-50 via-white to-brand-100 text-slate-800">
+  <!-- decor -->
+  <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+    <div class="absolute -top-16 -left-10 h-64 w-64 rounded-full bg-brand-200 blur-3xl opacity-50 animate-blob"></div>
+    <div class="absolute top-32 -right-8 h-72 w-72 rounded-full bg-brand-300 blur-3xl opacity-40 animate-blob" style="animation-delay:2s"></div>
+    <div class="absolute bottom-0 left-1/3 h-56 w-56 rounded-full bg-brand-100 blur-3xl opacity-60 animate-blob" style="animation-delay:4s"></div>
+  </div>
+
+  <!-- NAV -->
+  <header class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+    <a href="./index.html" class="flex items-center gap-2">
+      <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-brand-400 text-white shadow-soft">🌱</span>
+      <span class="text-lg font-extrabold">Eco<span class="text-brand-600">Quiz</span></span>
+    </a>
+    <nav class="hidden md:flex gap-6 text-slate-600">
+      <a href="./index.html#jogar" class="hover:text-slate-900">Jogar</a>
+      <a href="./curiosidade.html" class="hover:text-slate-900">Curiosidades</a>
+      <a href="./impacto.html" class="hover:text-slate-900">Impacto</a>
+      <a href="./mapa.html" class="hover:text-slate-900">Mapa</a>
+      <a href="./interativo.html" class="text-slate-900 font-semibold">Interativo</a>
+    </nav>
+    <a href="./index.html#jogar" class="px-4 py-2 rounded-xl bg-brand-500 text-white hover:bg-brand-600 transition shadow-soft">Voltar ao quiz</a>
+  </header>
+
+  <!-- HERO -->
+  <section class="max-w-7xl mx-auto px-6 pt-4 pb-6 text-center">
+    <div class="inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-1 text-sm text-slate-600 shadow-soft">
+      <span class="h-2 w-2 rounded-full bg-brand-500 animate-pulse"></span>
+      Microfone no navegador • dB aproximado (calibre!)
+    </div>
+    <h1 class="mt-4 text-4xl md:text-5xl font-extrabold leading-tight">
+      Medidor de <span class="bg-gradient-to-r from-brand-600 to-brand-400 bg-clip-text text-transparent">Decibéis</span>
+    </h1>
+    <p class="mt-3 text-lg text-slate-600 max-w-2xl mx-auto">
+      Veja o nível de ruído do ambiente em tempo real. Use a calibração para aproximar dB SPL.
+    </p>
+  </section>
+
+  <!-- CARD -->
+  <section class="max-w-6xl mx-auto px-6 pb-16 grid lg:grid-cols-3 gap-6">
+    <!-- Painel -->
+    <div class="lg:col-span-2 bg-white rounded-2xl p-6 border border-brand-100 shadow-soft">
+      <div class="flex flex-wrap items-center gap-3">
+        <button id="btnStart" class="px-4 py-2 rounded-xl bg-brand-500 text-white hover:bg-brand-600">Iniciar</button>
+        <button id="btnStop"  class="px-4 py-2 rounded-xl bg-white border border-brand-200 hover:bg-brand-50">Parar</button>
+
+        <div class="ml-auto flex items-center gap-2 text-sm">
+          <label class="text-slate-600">Suavização</label>
+          <input id="smooth" type="range" min="0" max="0.95" step="0.05" value="0.5">
+          <span id="smoothVal" class="text-slate-700 font-semibold">0.50</span>
+        </div>
+      </div>
+      
+      
+
+      <div class="mt-6 grid sm:grid-cols-3 gap-3">
+        <div class="rounded-xl border border-brand-100 p-4 bg-brand-50/60 text-center">
+          <div class="text-sm text-slate-600">Atual</div>
+          <div id="dbNow" class="text-5xl font-extrabold text-brand-600">—</div>
+          <div id="envNow" class="text-slate-600 text-sm mt-1">—</div>
+        </div>
+        <div class="rounded-xl border border-brand-100 p-4 bg-white text-center">
+          <div class="text-sm text-slate-600">Pico</div>
+          <div id="dbPeak" class="text-4xl font-extrabold">—</div>
+          <div class="text-slate-600 text-xs mt-1">últimos 30s</div>
+        </div>
+        <div class="rounded-xl border border-brand-100 p-4 bg-white text-center">
+          <div class="text-sm text-slate-600">Média</div>
+          <div id="dbAvg" class="text-4xl font-extrabold">—</div>
+          <div class="text-slate-600 text-xs mt-1">sessão</div>
+        </div>
+      </div>
+
+      <!-- barra -->
+      <div class="mt-6">
+        <div class="flex justify-between text-xs text-slate-600 mb-1">
+          <span>Silêncio</span><span>Show</span>
+        </div>
+        <div class="h-4 rounded-full bg-brand-100 overflow-hidden">
+          <div id="dbBar" class="h-full w-0 bg-gradient-to-r from-emerald-400 via-lime-400 to-red-500 transition-[width]"></div>
+        </div>
+      </div>
+
+      <!-- gráfico -->
+      <div class="mt-6">
+        <canvas id="chart" class="w-full rounded-xl border border-brand-100 bg-white" height="160"></canvas>
+      </div>
+
+      <!-- calibração -->
+      <div class="mt-6 grid sm:grid-cols-2 gap-4">
+        <div class="rounded-xl border border-brand-100 p-4 bg-white">
+          <div class="text-sm font-semibold">Calibração (offset)</div>
+          <p class="text-xs text-slate-600">Como microfone de notebook/cel não é calibrado, mostramos dB aproximado (dBFS + offset). Ajuste para valores mais realistas.</p>
+          <div class="mt-2 flex items-center gap-2">
+            <input id="calib" type="range" min="60" max="120" step="1" value="94" class="flex-1">
+            <span id="calibVal" class="w-12 text-right font-semibold">94</span>
+          </div>
+        </div>
+        <div class="rounded-xl border border-brand-100 p-4 bg-white">
+          <div class="text-sm font-semibold">Exportar CSV</div>
+          <p class="text-xs text-slate-600">Baixe a série temporal (dB) da sessão.</p>
+          <button id="btnCSV" class="mt-2 px-4 py-2 rounded-xl bg-white border border-brand-200 hover:bg-brand-50">Baixar CSV</button>
+        </div>
+      </div>
+
+      <div id="status" class="mt-4 text-sm text-slate-600">Pronto. Clique em Iniciar e permita o microfone.</div>
+    </div>
+
+    <!-- Referências rápidas -->
+    <aside class="bg-white rounded-2xl p-6 border border-brand-100 shadow-soft">
+      <h3 class="text-lg font-extrabold mb-2">Faixas de referência (aprox.)</h3>
+      <ul class="text-sm text-slate-700 space-y-1">
+        <li>30–40 dB: Biblioteca</li>
+        <li>45–55 dB: Escritório/Conversa leve</li>
+        <li>60–70 dB: Rua movimentada</li>
+        <li>75–85 dB: Trânsito pesado</li>
+        <li>90–100 dB: Show/Festa</li>
+      </ul>
+      <p class="mt-3 text-xs text-slate-500">*Valores indicativos. Para medições oficiais, use decibelímetro calibrado com ponderação A (dB(A)).</p>
+    </aside>
+  </section>
+
+  <footer class="text-center px-6 py-10 text-slate-500">© 2025 — EcoQuiz. Interativo.</footer>
+  <script src="scrpit-interativo.js"></script>
+</body>
+</html>
