@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>EcoQuiz — EcoGlobe 3D</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50:"#f0fdf4",100:"#dcfce7",200:"#bbf7d0",300:"#86efac",
+              400:"#4ade80",500:"#22c55e",600:"#16a34a"
+            }
+          },
+          boxShadow:{soft:"0 12px 40px rgba(16,185,129,.15)"}
+        }
+      }
+    }
+  </script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-brand-50 via-white to-brand-100 text-slate-800">
+
+  <!-- HEADER igual ao resto -->
+  <header class="max-w-7xl mx-auto px-6 py-4 flex items-center gap-6">
+    <a href="./index.html" class="flex items-center gap-2">
+      <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500 text-white shadow-soft">🌱</span>
+      <span class="text-lg font-extrabold">Eco<span class="text-brand-600">Quiz</span></span>
+    </a>
+
+    <nav class="hidden md:flex gap-6 text-slate-600 mx-auto">
+      <a href="./index.html#jogar"    class="hover:text-slate-900">Jogar</a>
+      <a href="./impacto.html"        class="hover:text-slate-900">Impacto</a>
+      <a href="./curiosidade.html"    class="hover:text-slate-900">Curiosidades</a>
+      <a href="./mapa.html"           class="hover:text-slate-900">Mapa</a>
+      <a href="./interativo.html"     class="hover:text-slate-900">Interativo</a>
+      <a href="./ecoglobo.html"       class="text-slate-900 font-semibold">Eco Globe</a>
+      <a href="./floresta.html" class="hover:text-slate-900">Floresta</a>
+    </nav>
+
+    <a href="./index.html#jogar"
+       class="ml-auto md:ml-0 inline-flex items-center px-4 py-2 rounded-xl bg-brand-500 text-white shadow-soft hover:bg-brand-600">
+      Começar
+    </a>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-6 pb-12">
+    <div class="grid lg:grid-cols-[1fr,360px] gap-6">
+
+      <!-- CARD CANVAS -->
+      <section class="rounded-3xl bg-white shadow-soft p-4">
+        <div class="flex items-center justify-between mb-2">
+          <h2 class="text-lg font-bold">Planeta dinâmico</h2>
+          <span class="inline-flex items-center gap-2 text-sm bg-white/80 backdrop-blur px-3 py-1 rounded-xl">
+            <span class="h-2 w-2 rounded-full bg-brand-500 animate-pulse"></span>
+            WebGL ativo
+          </span>
+        </div>
+
+        <!-- Canvas responsivo: mantém quadrado com Tailwind -->
+        <div class="relative w-full">
+          <canvas id="stage" class="w-full aspect-square rounded-2xl bg-white"></canvas>
+        </div>
+      </section>
+
+      <!-- SIDEBAR CONTROLES -->
+      <aside class="rounded-3xl bg-white shadow-soft p-5">
+        <h3 class="text-lg font-bold mb-3">Controles</h3>
+
+
+
+        <div class="mb-4">
+          <label class="block text-sm mb-1">Pureza do Ar (0-100%)</label>
+          <input id="score" type="range" min="0" max="100" value="75" class="w-full accent-brand-600">
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm mb-1">Deformação por ruido (0 - 120 dB)</label>
+          <input id="noise" type="range" min="40" max="80" value="52" class="w-full accent-brand-600">
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm mb-1">Tamanho da grade</label>
+          <select id="detail" class="w-full rounded-xl border p-2">
+            <option value="32">Normal</option>
+            <option value="48">+ Detalhe</option>
+            <option value="64">Ultra</option>
+          </select>
+        </div>
+
+        <div class="flex flex-wrap gap-2 mb-3">
+          <button id="btnSquare" class="px-3 py-2 rounded-xl border hover:bg-brand-50">Baixar PNG (quadrado)</button>
+          <button id="btnRound"  class="px-3 py-2 rounded-xl border hover:bg-brand-50">Baixar PNG (redondo)</button>
+          <button id="btnReset"  class="px-3 py-2 rounded-xl border hover:bg-brand-50">Reset câmera</button>
+        </div>
+
+
+    </div>
+  </main>
+
+  <!-- Shaders (iguais) -->
+  <script id="vs" type="x-shader/x-vertex">
+  attribute vec3 aPos;
+  attribute vec3 aNormal;
+  attribute vec2 aUV;
+  uniform mat4 uMVP;
+  uniform mat4 uModel;
+  uniform float uTime;
+  uniform float uNoiseAmt;
+  varying vec3 vNormal;
+  varying vec2 vUV;
+  float n3(vec3 p){ return sin(p.x)*sin(p.y)*sin(p.z); }
+  void main(){
+    float ripple = n3(aPos*2.0 + vec3(uTime*0.6, uTime*0.4, uTime*0.3));
+    vec3 displaced = aPos + aNormal * ripple * (uNoiseAmt*0.15);
+    vNormal = mat3(uModel) * aNormal;
+    vUV = aUV;
+    gl_Position = uMVP * vec4(displaced, 1.0);
+  }
+  </script>
+
+  <script id="fs" type="x-shader/x-fragment">
+  precision mediump float;
+  varying vec3 vNormal;
+  varying vec2 vUV;
+  uniform vec3 uLightDir;
+  uniform vec3 uBase;
+  uniform vec3 uAcc;
+  void main(){
+    vec3 N = normalize(vNormal);
+    float diff = max(dot(N, normalize(uLightDir)), 0.0);
+    float rim = pow(1.0 - max(dot(N, vec3(0.0,0.0,1.0)), 0.0), 2.0);
+    float lines = 24.0;
+    float lat = abs(fract(vUV.y*lines)-0.5);
+    float lon = abs(fract(vUV.x*lines)-0.5);
+    float lineMask = smoothstep(0.46,0.49,0.5 - min(lat, lon));
+    vec3 col = mix(uBase, uAcc, lineMask*0.85);
+    col *= 0.35 + 0.65*diff;
+    col += rim * 0.15;
+    gl_FragColor = vec4(col, 1.0);
+  }
+  </script>
+
+  <script defer src="./script-ecoglobo.js"></script>
+</body>
+</html>
